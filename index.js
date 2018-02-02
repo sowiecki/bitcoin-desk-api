@@ -12,30 +12,46 @@ const {
 
 const coin = COINS.BITCOIN;
 
+// State
 let prevPrice = 0;
 let nextPrice = 0;
+let counter = 0;
+let message = chalk.bgBlue("Initializing");
 
 const handlePrice = ({ bpi }) => {
   prevPrice = nextPrice;
   nextPrice = bpi.USD.rate_float;
 
-  // Wait to compare two prices
-  if (![prevPrice, nextPrice].includes(0)) return;
-
   if (prevPrice < nextPrice) {
-    console.log(chalk.bgGreen("Buy lambo!"));
+    message = chalk.bgGreen("Buy lambo!");
     sendDeskRequest(DESK_API_BODY_RAISE);
   } else if (prevPrice > nextPrice) {
-    console.log(chalk.bgRed(`Buy more ${coin.NAME}!`));
+    message = chalk.bgRed(`Buy more ${coin.NAME}!`);
     sendDeskRequest(DESK_API_BODY_LOWER);
   } else {
-    console.log(chalk.bgYellow("No change"));
+    message = chalk.bgYellow("No change");
   }
 };
 
-const checkPrice = () =>
+const sendCheckPriceReq = () =>
   https
     .get(coin.API_URI, handlePriceResponse(handlePrice))
     .on("error", console.error);
+
+const checkPrice = () => {
+  process.stdout.clearLine();
+  process.stdout.cursorTo(0);
+
+  if (counter === CHECK_PRICE_INTERVAL) {
+    sendCheckPriceReq();
+    counter = 0;
+    process.stdout.write(message);
+  } else {
+    process.stdout.write(`${message} ${".".repeat(counter)}`);
+    counter += 1;
+  }
+};
+
+sendCheckPriceReq();
 
 setInterval(checkPrice, CHECK_PRICE_INTERVAL);
