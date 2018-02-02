@@ -5,4 +5,4 @@ module.exports.COINS = {
   }
 };
 
-module.exports.CHECK_PRICE_INTERVAL = 100;
+module.exports.CHECK_PRICE_INTERVAL = 25;
