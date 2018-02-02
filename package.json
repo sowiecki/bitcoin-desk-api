@@ -11,5 +11,8 @@
     "npm": "5.6.0"
   },
   "author": "Sean Owiecki",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.3.0"
+  }
 }
